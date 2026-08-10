@@ -1,437 +1,160 @@
 # F&B Product Innovation Intelligence
-
 ## Consumer Feedback, Product Attributes & Innovation Opportunity Analysis
 
 > **Project Type:** Portfolio Project — Simulated Business Scenario
 >
-> **Dataset:** Food.com Recipes and Reviews
+> **Dataset:** Food.com Recipes and Reviews (Kaggle, irkaal)
 >
-> **Scope:** This project simulates an F&B product innovation analytics problem using publicly available data. It does not represent internal company data, actual commercial decisions, or the operations of any specific F&B company.
+> **Scope:** This project simulates an F&B product innovation analytics problem using publicly available recipe and review data. It does not represent internal company data, actual commercial decisions, or the operations of any specific F&B company.
 
 ---
 
 # 1. Business Context
 
-An F&B company operates a large and diverse product portfolio.
+An F&B company operates a large and diverse product portfolio. The company has accumulated a substantial amount of consumer feedback and recipe-level information, but the R&D team faces a recurring problem:
 
-The company has accumulated a substantial amount of consumer feedback and product-level information, but the R&D team faces a recurring problem:
+> **There is a large amount of recipe and review data, but it is unclear which signals represent meaningful consumer preferences, genuine product pain points, or opportunities worth further R&D investigation.**
 
-> **There is a large amount of consumer and product data, but it is unclear which signals represent meaningful consumer preferences, genuine product pain points, or opportunities worth further R&D investigation.**
+The company does not want product innovation decisions to be driven simply by the highest-rated recipes, the most frequently reviewed recipes, or the most common ingredients.
 
-The company does not want product innovation decisions to be driven simply by:
-
-- the highest-rated products,
-- the most frequently reviewed products,
-- the most common ingredients,
-- or food trends that receive temporary attention.
-
-The challenge is that different functions interpret the same consumer signals differently.
+The challenge is that different functions interpret the same signals differently — and, importantly, **not every function's hypothesis can actually be tested with the data available.** Part of this project's job is to be explicit about that before any analysis begins.
 
 ---
 
 # 2. The Internal Debate
 
-Several functions have competing hypotheses about what drives stronger consumer response and where innovation opportunities may exist.
-
-## 2.1 Marketing Hypothesis
+## 2.1 Marketing Hypothesis — Testable
 
 Marketing observes that some recipes receive substantially more reviews and stronger ratings than others.
 
-Their hypothesis is:
+> **Hypothesis:** Customer response may be concentrated around particular recipe categories, cuisines, ingredients, nutritional profiles, or preparation characteristics.
 
-> **Customer response may be concentrated around particular recipe categories, cuisines, ingredients, nutritional profiles, serving sizes, or preparation characteristics.**
+**What the data can support:** `RecipeCategory`, `Keywords`, `RecipeIngredientParts`, and the nutrition fields can be compared against `AggregatedRating` and `ReviewCount` to test whether certain categories or ingredient patterns are associated with stronger evaluation.
 
-Marketing therefore wants to understand whether certain product propositions consistently attract stronger consumer engagement and satisfaction.
+**What the data cannot support:** Marketing cannot use this dataset to identify *consumer segments* (age, income, region, or any demographic split). The dataset contains `AuthorId`/`AuthorName` for the recipe's *creator*, not demographic attributes of the people who rated or reviewed it. Any claim about "which customer segment prefers what" is out of scope and will not be attempted.
 
-However:
-
-> **High review volume does not necessarily mean high customer satisfaction.**
-
-A recipe may receive many reviews simply because it has greater popularity or exposure.
-
-Therefore, review volume and rating must not automatically be interpreted as evidence of consumer preference.
+However: **high review volume does not necessarily mean high satisfaction** — a recipe may simply have more exposure. Review volume and rating will not be treated as interchangeable evidence.
 
 ---
 
-## 2.2 R&D Hypothesis
+## 2.2 R&D Hypothesis — Testable
 
-R&D looks at the same portfolio from a product-development perspective.
+> **Hypothesis:** Certain combinations of recipe attributes (ingredients, category, nutrition profile, preparation time) may be associated with stronger consumer evaluation than others.
 
-Their question is not simply:
+**What the data can support:** This is the hypothesis best matched to the available fields. `RecipeIngredientParts`, `RecipeCategory`, `CookTime`/`PrepTime`/`TotalTime`, and the nutrition columns (`Calories`, `FatContent`, `SodiumContent`, `ProteinContent`, etc.) can all be tested against `AggregatedRating`.
 
-> "Which recipes are popular?"
-
-Instead:
-
-> **"Which product attributes appear repeatedly among products receiving stronger consumer evaluations, and could these attributes represent potential directions for future product development?"**
-
-R&D suspects that consumer preference may depend on combinations of product attributes rather than a single ingredient.
-
-For example, highly evaluated recipes may share combinations of:
-
-- ingredient characteristics,
-- cuisine/category,
-- serving size,
-- preparation requirements,
-- nutritional characteristics.
-
-However:
-
-> **The presence of an attribute in highly rated products does not by itself demonstrate that the attribute causes stronger consumer preference.**
-
-This distinction must be preserved throughout the analysis.
+**Caveat:** The presence of an attribute in highly rated recipes does not by itself demonstrate that the attribute *causes* stronger preference. This distinction will be preserved throughout — especially because `ReviewCount` varies enormously across recipes (some have 1–2 reviews, others dozens), so small-sample ratings need to be treated with appropriate caution rather than compared at face value with high-volume ones.
 
 ---
 
-## 2.3 Consumer Insights Hypothesis
+## 2.3 Consumer Insights Hypothesis — Conditional, Not Yet Confirmed
 
-Consumer Insights focuses on written customer feedback.
+> **Hypothesis:** Aggregate ratings may hide recurring product-level pain points and positive attributes that are only visible in written review text.
 
-They observe that ratings alone may not fully explain why customers like or dislike a product.
+**Status: unconfirmed.** The Recipes table (RecipeId, Name, AuthorId, ..., AggregatedRating, ReviewCount) does **not** contain review text — it only contains an aggregated score and a count. Testing this hypothesis requires the separate **Reviews table** from the same dataset (which, per the dataset's public documentation, contains `ReviewId`, `RecipeId`, `AuthorId`, `Rating`, `Review` text, and submission date).
 
-A customer may give a high rating while still mentioning issues such as:
-
-- preparation difficulty,
-- preparation time,
-- ingredient availability,
-- taste,
-- texture,
-- portion size,
-- or specific ingredients.
-
-Their hypothesis is:
-
-> **Aggregate ratings may hide recurring product-level pain points and positive attributes that become visible only when the written feedback is examined.**
-
-This creates an important analytical question:
-
-> **Can a product have a strong overall rating while still generating a recurring complaint about a specific product attribute?**
+**This hypothesis will only be included in the analysis if the Reviews table is loaded and confirmed to contain a text field.** If it is not available or does not contain usable text, this hypothesis will be marked "Not Testable" in the final report rather than answered indirectly through the aggregated rating alone.
 
 ---
 
-## 2.4 Product / Commercial Hypothesis
+## 2.4 Product / Commercial Hypothesis — Testable, Reframed
 
-The Product / Commercial perspective introduces another constraint.
+> **Original framing (rejected):** "...requires greater preparation complexity... less practical for commercial development."
 
-A product concept may appear attractive from a consumer perspective while also requiring:
+**Why this framing is rejected:** This dataset contains home-cook recipes submitted to a public recipe platform. It has no data on manufacturing cost, production scalability, ingredient sourcing at commercial volume, or industrial feasibility. Framing any finding as being about "commercial development" would overstate what the data supports.
 
-- greater preparation effort,
-- more ingredients,
-- greater product complexity,
-- or other characteristics that may affect commercial practicality.
+**Corrected hypothesis:**
 
-The dataset contains information related to recipe preparation, ingredients, servings, nutrition, and instructions.
+> **A recipe that appears attractive to reviewers (based on rating) may also require substantial preparation effort or a large number of ingredients, which could make it less practical for a home cook to actually complete — independent of how well-rated it is.**
 
-The hypothesis is therefore:
-
-> **The strongest consumer signal may not automatically represent the most practical innovation opportunity.**
-
-Consumer attractiveness and product practicality need to be considered separately.
+**What the data can support:** `PrepTime`, `CookTime`, `TotalTime`, and ingredient count (derived from `RecipeIngredientParts`) compared against `AggregatedRating` and `ReviewCount`. This tests home-preparation practicality, not commercial manufacturing feasibility — the two are not the same claim, and only the first is within scope.
 
 ---
 
 # 3. Core Business Pain Point
 
-The company has:
+The company has a large number of recipes, ratings, and (potentially) reviews, but:
 
-- hundreds of thousands of recipes,
-- more than one million reviews,
-- large numbers of ingredient combinations,
-- multiple recipe categories,
-- different nutritional profiles,
-- different preparation requirements,
-- and substantial variation in consumer ratings.
+> **The problem is not a lack of data. The problem is too much information with insufficient prioritization, and not every apparent signal is actually testable with what's available.**
 
-The problem is therefore **not a lack of data**.
-
-The problem is:
-
-> **Too much information, but insufficient prioritization.**
-
-A high rating may indicate satisfaction.
-
-A high review volume may indicate popularity or exposure.
-
-A frequently mentioned ingredient may indicate a recurring product characteristic.
-
-A recurring negative phrase may indicate a potential pain point.
-
-A particular combination of product attributes may appear frequently among highly rated recipes.
-
-But:
-
-> **None of these signals alone is sufficient to justify an R&D innovation decision.**
+A high rating may indicate satisfaction, or it may reflect a very small number of reviewers. A frequently occurring ingredient may indicate a real pattern, or it may simply be common across the category regardless of rating. None of these signals is sufficient on its own — and part of this project's discipline is separating hypotheses the data can test from ones it cannot.
 
 ---
 
 # 4. The Difficult Business Problem
 
-The difficult problem is therefore not:
+> **Given recipe-level attributes and rating/review-volume data (and review text, if confirmed available), how can the company distinguish recurring and meaningful consumer signals from popularity effects, small-sample noise, or misleading associations — and identify which product attributes are sufficiently supported by evidence to warrant further R&D investigation?**
 
-> "Find the highest-rated recipes."
-
-It is not:
-
-> "Find the most common ingredients."
-
-And it is not simply:
-
-> "Perform sentiment analysis on customer reviews."
-
-The actual business problem is:
-
-> **Given a large body of consumer feedback and product-level attributes, how can the company distinguish recurring and meaningful consumer signals from popularity effects, isolated opinions, or misleading associations, and identify product attributes or unmet needs that are sufficiently supported by evidence to warrant further R&D investigation?**
-
-This creates a need to evaluate competing perspectives rather than assume that one department is correct from the beginning.
+| Function | Hypothesis | Testable with this dataset? |
+|---|---|---|
+| Marketing | Preference concentrated around category/cuisine/ingredient/nutrition profile | Yes |
+| Marketing | Preference varies by consumer segment (demographic) | **No — no demographic fields exist** |
+| R&D | Attribute combinations associated with stronger evaluation | Yes |
+| Consumer Insights | Written reviews reveal pain points hidden by aggregate rating | **Conditional — requires Reviews table with text** |
+| Commercial | High-rated recipes may still be impractical for a home cook to prepare | Yes (reframed from "commercial development") |
 
 ---
 
-# 5. Analytical Questions
+# 5. Analytical Questions (Revised to Match Available Data)
 
-The project will investigate the following questions.
+### Consumer Preference (Recipes table)
+1. Are certain recipe categories or cuisines associated with higher `AggregatedRating`?
+2. Are specific ingredients or ingredient combinations associated with higher ratings, after accounting for category?
+3. Are apparent high-rating patterns driven by recipes with very few reviews (small-sample effects)?
 
-### Consumer Preference
+### Product Attributes vs. Preparation Burden
+4. Is there a relationship between `TotalTime`/ingredient count and `AggregatedRating`?
+5. Do highly rated recipes tend to require more or less preparation effort than lower-rated ones in the same category?
 
-1. What product characteristics are associated with stronger consumer evaluations?
-2. Are these patterns consistent across different recipe categories or segments?
-3. Are apparent preferences driven by a small number of highly popular recipes?
+### Nutrition Profile
+6. Are nutrition attributes (calories, fat, sugar, protein) associated with rating differences, and does this vary by category?
 
-### Consumer Pain Points
+### Review Volume vs. Rating
+7. Does `ReviewCount` correlate with `AggregatedRating`, or are they independent signals (popularity vs. satisfaction)?
 
-4. What product-related issues repeatedly appear in written reviews?
-5. Which pain points occur frequently enough to warrant attention?
-6. Are recurring negative signals concentrated around particular product characteristics?
-
-### Product Attributes
-
-7. Which ingredients or combinations of attributes appear disproportionately among strongly evaluated products?
-8. Are these relationships robust, or could they be explained by other characteristics?
-
-### Innovation Opportunities
-
-9. Where does the existing product space appear to contain gaps between consumer signals and available product characteristics?
-10. Which opportunities have sufficient evidence to justify further R&D investigation?
+### Consumer Pain Points (conditional on Reviews table with text)
+8. *[Pending confirmation of Reviews table]* What recurring issues appear in review text for recipes with high ratings but specific recurring complaints?
 
 ### Evidence Quality
-
-11. Which findings represent relatively strong evidence?
-12. Which findings remain associative rather than causal?
-13. Which hypotheses cannot be supported by the available data?
+9. Which of the above patterns hold up after controlling for category and review-count sample size?
+10. Which apparent patterns should be marked "insufficient evidence" or "not testable"?
 
 ---
 
 # 6. Evidence-First Principle
 
-The project will explicitly distinguish between:
+The project distinguishes between **Observation** (a pattern exists), **Association** (two variables move together), **Evidence** (the pattern survives basic robustness checks — e.g., controlling for category, excluding low-review-count outliers), and **Hypothesis** (a possible explanation, not yet supported).
 
-### Observation
-
-A pattern exists in the data.
-
-### Association
-
-Two characteristics appear to be related.
-
-### Evidence
-
-The pattern remains reasonably consistent after appropriate checks.
-
-### Hypothesis
-
-A possible explanation for the observed pattern.
-
-### Business Opportunity
-
-A finding that combines sufficient evidence with meaningful business relevance.
-
-These concepts will not be treated as interchangeable.
-
-In particular:
-
-> **Correlation will not automatically be interpreted as causation.**
-
-And:
-
-> **A statistically or descriptively strong pattern will not automatically be treated as a commercially attractive innovation opportunity.**
+> **Correlation will not be interpreted as causation. A pattern found in the Recipes table will not be extended into a claim about "customers" or "consumer segments" unless supported by a table that actually describes reviewers.**
 
 ---
 
-# 7. Innovation Opportunity Framework
+# 7. Scope and Limitations (Confirmed Against Actual Schema)
 
-The final objective is not to identify a single "winning product."
+Based on the columns provided (`RecipeId, Name, AuthorId, AuthorName, CookTime, PrepTime, TotalTime, DatePublished, Description, Images, RecipeCategory, Keywords, RecipeIngredientQuantities, RecipeIngredientParts, AggregatedRating, ReviewCount, Calories, FatContent, SaturatedFatContent, CholesterolContent, SodiumContent, CarbohydrateContent, FiberContent, SugarContent, ProteinContent, RecipeServings, RecipeYield, RecipeInstructions`), this analysis **cannot** support claims about:
 
-Instead, the project will build an:
+- customer demographics or consumer segments (no such fields exist),
+- actual commercial/manufacturing feasibility (this is home-recipe data),
+- real sales, revenue, or purchase behavior (no transaction data),
+- individual reviewer sentiment (unless the separate Reviews table with text is confirmed and loaded),
+- causal explanations for why a recipe is rated the way it is (rating drivers can only be described as associative).
 
-> **Innovation Opportunity Pipeline**
-
-Potential opportunities will be evaluated along two separate dimensions:
-
-### Evidence Strength
-
-How strongly does the available data support the observed signal?
-
-### Business Attractiveness
-
-If the signal is credible, how potentially valuable or relevant is it as an area for further R&D investigation?
-
-This creates four possible outcomes:
-
-| Evidence | Business Attractiveness | Interpretation |
-|---|---|---|
-| Strong | High | High-priority opportunity for further investigation |
-| Strong | Low | Credible finding, but limited innovation priority |
-| Weak | High | Interesting hypothesis requiring further validation |
-| Weak | Low | Low priority |
-
-The framework intentionally prevents an attractive idea from being presented as a validated opportunity when the underlying evidence is weak.
+Where the data does not support a conclusion, the project will state **"insufficient evidence"** or **"not testable with available data"** rather than infer an answer.
 
 ---
 
-# 8. Expected Business Output
+# 8. Data Verification Before Analysis
 
-The project aims to produce a structured view of:
+Before analysis begins, the following will be confirmed directly from the loaded data (not assumed):
 
-1. Consumer preferences
-2. Recurring product-related pain points
-3. Relevant product attributes
-4. Evidence-supported relationships
-5. Uncertain or unsupported hypotheses
-6. Potential innovation gaps
-7. Prioritized innovation opportunities
-
-The final output should help answer:
-
-> **"Which consumer and product signals are credible enough for R&D to investigate further?"**
-
-rather than:
-
-> **"Which product should the company launch?"**
-
-The latter would require additional information and validation beyond the scope of this public dataset.
-
----
-
-# 9. Scope and Limitations
-
-This project uses a public recipe and review dataset rather than internal commercial data.
-
-Therefore, the analysis cannot directly establish:
-
-- actual company revenue impact,
-- customer income,
-- real purchase frequency,
-- real customer retention,
-- actual product profitability,
-- manufacturing cost,
-- real market share,
-- actual competitor performance,
-- or post-launch commercial performance.
-
-These limitations will be explicitly acknowledged.
-
-Where the available data does not support a conclusion, the project will state:
-
-> **Insufficient evidence.**
-
-The project will not invent missing business variables or present simulated findings as actual commercial outcomes.
-
----
-
-# 10. Project Success Criteria
-
-The project will be considered successful if it can demonstrate that:
-
-### 1. The business problem is clearly defined
-
-The analysis starts from a realistic decision problem rather than from a dataset or visualization.
-
-### 2. Competing hypotheses are explicitly considered
-
-Different interpretations are evaluated rather than assuming one explanation from the beginning.
-
-### 3. Consumer feedback is translated into structured evidence
-
-Reviews are analyzed for recurring product-related signals rather than reduced to a single sentiment score.
-
-### 4. Product attributes are connected to consumer response
-
-The analysis investigates whether observable product characteristics are associated with stronger or weaker consumer responses.
-
-### 5. Findings are stress-tested
-
-Important findings are checked for robustness, potential confounding factors, sample-size issues, and alternative explanations where applicable.
-
-### 6. Association is separated from causation
-
-The project does not claim that an attribute causes consumer preference without appropriate evidence.
-
-### 7. Findings are translated into business implications
-
-The analysis does not stop at statistical significance or descriptive patterns.
-
-### 8. Evidence strength is separated from business attractiveness
-
-Interesting ideas are not automatically presented as validated innovation opportunities.
-
-### 9. Limitations are explicit
-
-The project clearly distinguishes what the dataset can support from what requires additional business data or real-world validation.
-
----
-
-# 11. Final Decision Framework
-
-The final analysis will attempt to move through the following chain:
-
-Consumer Feedback
-↓
-Consumer Signals
-↓
-Product Pain Points / Preferences
-↓
-Product Attributes
-↓
-Hypotheses
-↓
-Evidence Assessment
-↓
-Robustness / Alternative Explanations
-↓
-Innovation Opportunities
-↓
-Prioritization for Further R&D Investigation
-
-The final output is therefore intended to support **R&D decision-making under uncertainty**, not to replace real-world product development, sensory testing, consumer testing, costing, or commercial validation.
-
----
-
-# 12. Data Verification Before Analysis
-
-Before analytical work begins, the dataset structure will be verified directly after loading the source data.
-
-The following will **not** be assumed to be correct until verified:
-
-- exact column names,
-- data types,
-- missing-value structure,
-- duplicate structure,
-- recipe-review relationship,
-- ingredient representation,
-- nutrition fields,
-- preparation/cooking time fields,
-- user identifiers,
-- and the actual number of recipes, reviews, and users.
-
-Any discrepancy between the dataset documentation and the loaded data will be documented before analysis proceeds.
+- exact row/column counts for the Recipes table, and for the Reviews table if used,
+- whether a Reviews table with review text is actually available and joinable via `RecipeId`,
+- missing-value structure across all fields used in analysis (e.g., `RecipeServings`, `RecipeYield`, and nutrition fields show `NA` in the sample rows already seen),
+- the distribution of `ReviewCount` (to set a minimum-review threshold before comparing ratings across recipes),
+- parsing requirements for list-like string columns (`RecipeIngredientParts`, `RecipeIngredientQuantities`, `Keywords`, `RecipeInstructions` are stored as R-style `c("...", "...")` strings and will need parsing before use).
 
 ---
 
 ## Project Principle
 
-> **Do not start with the answer. Start with the competing explanations.**
-
-The purpose of this project is not to prove that a particular ingredient, recipe characteristic, or consumer trend is "the answer."
-
-The purpose is to determine:
-
-> **What does the evidence actually support, how strong is that evidence, what remains uncertain, and which findings are worth taking to the next stage of R&D investigation?**
+> **Do not start with the answer. Start with the competing explanations — and rule out the ones the data cannot actually test before analyzing the ones it can.**

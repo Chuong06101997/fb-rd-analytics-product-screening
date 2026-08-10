@@ -138,7 +138,7 @@ Based on the columns provided (`RecipeId, Name, AuthorId, AuthorName, CookTime, 
 - real sales, revenue, or purchase behavior (no transaction data),
 - individual reviewer sentiment (unless the separate Reviews table with text is confirmed and loaded),
 - causal explanations for why a recipe is rated the way it is (rating drivers can only be described as associative).
-
+- External market context — macroeconomic conditions, competitor activity, or other brands/products — since this dataset contains only recipe and rating data from a single platform, with no fields describing anything outside that platform.
 Where the data does not support a conclusion, the project will state **"insufficient evidence"** or **"not testable with available data"** rather than infer an answer.
 
 ---

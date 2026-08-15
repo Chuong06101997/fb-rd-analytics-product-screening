@@ -12,7 +12,8 @@ An F&B product team can't test every recipe attribute before deciding where to i
 - 48.3% of recipes have never been rated, and 71% of ratings that exist are a perfect 5.0 — both had to be accounted for before trusting any comparison
 - Recommendation: **don't invest yet** — validate with better data first
 
-![Rating distribution shows a strong ceiling effect](assets/rating_distribution.png)
+<img width="649" height="414" alt="image" src="https://github.com/user-attachments/assets/0b62bc2c-1f3b-4b85-9217-a956e7040b14" />
+
 
 ---
 

@@ -184,23 +184,3 @@ Prioritized by what would actually move the business question forward — not a 
 4. **Controlled consumer testing** — for whichever attribute the business cares most about, a small controlled taste-test or survey would produce evidence this dataset structurally cannot.
 
 I would not propose combination/interaction testing (e.g. "sweet + quick + dessert") as a next step — with sample sizes already down to 900–1,400 per single-attribute test, splitting further by combinations would be underpowered before it started.
-
----
-
-### 5-Second HR Test
-
-- Business problem in 5 seconds? **Yes** — hero line + Decision line up top.
-- What I did? **Yes** — "tested X against consumer ratings" in the subtitle block.
-- Key result? **Yes** — headline bullets state the null result and the caught false positive immediately.
-- Recommendation? **Yes** — "Decision" line + headline bullet both state it before any methodology appears.
-- Reason to read further? **Yes** — the false-positive catch is a natural hook toward "how did you catch that?"
-
-### 60-Second Hiring Manager Test
-
-- **Business thinking:** present — framed as a screening decision for R&D, not a stats exercise.
-- **Analytical judgment:** present — the negative-finding section and the "why more data isn't the answer" limitation both show reasoning, not just execution.
-- **Statistical discipline:** present, but pushed to the Deep Dive section rather than the top — visible to anyone who clicks through, invisible to anyone skimming.
-- **Handling uncertainty:** present — "Insufficient Evidence ≠ no effect" is stated explicitly, twice, in different sections, because it's the easiest thing to misread.
-- **Turning analysis into decision:** present — Recommendation section states what to do, what not to do, and what would change the answer.
-
-Net read: not "someone who ran statistical tests" — closer to "someone who caught a false positive before it became a bad recommendation, and knew when to stop."

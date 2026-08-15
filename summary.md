@@ -28,3 +28,6 @@ Round 1 (test main effect riêng lẻ — category, prep-time bucket, 3 nutritio
 | Notebook | Code thực thi, đã verify chạy khớp trên Colab | Muốn tự chạy lại/verify số liệu |
 | Decision Log | 10 quyết định rẽ nhánh + lý do + alternative bị loại | Muốn hiểu tại sao chọn phương pháp X thay vì Y |
 | Assumption Register | 5 giả định bắt buộc + rủi ro nếu sai | Muốn đánh giá độ tin cậy/rủi ro của kết luận |
+
+---
+*Đã qua audit độc lập — 0 VIOLATION, 0 MINOR ISSUE ở bản cuối. 1 correction đã xử lý trong quá trình: bổ sung câu clarification "Insufficient Evidence ≠ đã chứng minh không có ảnh hưởng" — đây là điểm rủi ro diễn giải cao nhất vì Summary là file nhiều khả năng bị đọc một mình nhất trong portfolio.*

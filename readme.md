@@ -138,7 +138,8 @@ Stated plainly, not as an apology — these shaped what could and couldn't be co
 - **Selection bias:** 48.3% of recipes have never been rated, and that's not random — it's recipes nobody tried hard enough to score. Every finding here applies to the subset of recipes that got rated, not to "all recipes."
 - **Shrinking sample after validity filters:** After requiring a minimum review count and a large-enough category to compare fairly, the usable sample dropped to 13–14% of the original 10,000 for two of the three tests, and to 9% for the nutrition test specifically.
 
-![Sample size shrinks at every validity-filtering step](assets/n_shrinkage.png)
+<img width="787" height="421" alt="image" src="https://github.com/user-attachments/assets/f5b26bea-3bee-456d-9695-f6deca9c9c12" />
+
 - **Not causal:** Every result here is a tested association, not a causal claim. Recipes weren't randomly assigned their attributes.
 - **No ROI or business-impact claim:** This dataset has no price, cost, or transaction data — nothing here quantifies revenue or savings, and none is claimed.
 - **No composite "health score":** Nutrition dimensions were tested individually rather than combined into one score, because any combined score requires choosing weights — and there was no validated basis in this dataset for choosing them. See the [Decision Log](FB_Decision_Log.md) for the full reasoning.
@@ -167,7 +168,8 @@ For readers who want the statistical detail behind the findings above:
 - **Confounders addressed:** review-count reliability (minimum-threshold + multi-threshold robustness), author clustering (~30% of the sample comes from just 145 prolific authors — tested with and without them), and category-level rating-missingness differences (ranged 40–64% across categories, flagged as an unresolved limitation rather than something correctable with a simple covariate).
 - **Effect sizes:** rank-biserial r and epsilon-squared, both consistently near zero (e.g. r = -0.003 to -0.033 across nutrition dimensions) rather than merely non-significant — this pattern of near-zero effect size holding steady across every robustness check is part of why the recommendation leans toward "the signal is genuinely weak," not just "underpowered."
 
-![Effect size across all 5 tests, consistently near zero](assets/effect_sizes.png)
+<img width="692" height="365" alt="image" src="https://github.com/user-attachments/assets/b065b3b6-fe92-4b72-947f-52049df897bb" />
+
 
 *Note: epsilon-squared (Category, Prep-time) and rank-biserial r (nutrition dimensions) are different metrics, not directly comparable on the same scale — shown together only to illustrate that every test, regardless of metric, landed near zero rather than near a conventional "small effect" threshold.*
 

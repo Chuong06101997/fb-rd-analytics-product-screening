@@ -11,4 +11,4 @@
 | Similar-shape distribution giữa nhóm cao/thấp (cần để diễn giải rank-biserial r là location shift thuần túy) | Cách kiểm tra đã định ở Phase 5 (so sánh boxplot) chưa được thực hiện/báo cáo ở Phase 6 — chỉ có %Rating=5.0 theo nhóm | Nếu shape khác biệt đáng kể, effect size có thể phản ánh sai lệch phân bố thay vì location shift — không đổi kết luận null hiện tại nhưng ảnh hưởng nếu sau này tìm thấy effect có ý nghĩa | Không có mitigation — giữ nguyên là limitation, Phase 5-6 |
 
 ---
-*Đã qua audit độc lập — 0 VIOLATION, 0 MINOR ISSUE ở bản cuối. 2 sửa đổi đã xử lý trong quá trình: (1) xóa 1 dòng (RecipeCategory nhãn duy nhất/sạch) vì không có nguồn trong Full Report gốc — đây là risk-analysis mới bị đưa nhầm vào thay vì extract; (2) bổ sung 1 dòng bị bỏ sót (similar-shape distribution) — giả định có thật trong Phase 5 nhưng cách kiểm tra đã cam kết chưa được thực hiện ở Phase 6.*
+

@@ -1,4 +1,4 @@
-Which recipe signals are actually strong enough to justify product development?
+# Which recipe signals are actually strong enough to justify product development?
 
 An F&B product team can't test every recipe attribute before deciding where to invest. This project asks a narrower, more useful question: based on 10,000 recipes, is there strong enough signal in category, prep time, or nutrition profile to prioritize any of them for product development — or not yet?
 
